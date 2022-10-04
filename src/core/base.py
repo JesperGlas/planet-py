@@ -1,6 +1,7 @@
 import sys
 import glfw
 from core.openGLUtils import OpenGLUtils
+from datetime import datetime
 
 class Base:
     
@@ -24,6 +25,8 @@ class Base:
         # print system info
         OpenGLUtils.printSystemInfo()
         glfw.set_key_callback(self._Window, self.keyboardEvents)
+        
+        self._TimeStamp = datetime.now()
 
     def update(self):
         pass
@@ -58,3 +61,9 @@ class Base:
             glfw.poll_events()
             
         self.shutdown()
+        
+    def deltaTime(self):
+        now = datetime.now()
+        delta = now - self._TimeStamp
+        self._TimeStamp = now
+        return delta.total_seconds()

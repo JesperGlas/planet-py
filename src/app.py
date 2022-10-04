@@ -3,6 +3,9 @@ from OpenGL.GL import *
 from core.base import Base
 from core.openGLUtils import OpenGLUtils
 from core.attribute import Attribute
+from core.uniform import Uniform
+from core.matrix import Matrix
+from math import pi
 
 class App(Base):
     
@@ -10,58 +13,70 @@ class App(Base):
         super().__init__(window_title)
         
         vert_code = """
+        uniform mat4 u_proj;
+        uniform mat4 u_model;
+        
         in vec3 a_position;
-        in vec3 a_color;
-
-        out vec3 v_color;
         
         void main()
         {
-            gl_Position = vec4(a_position, 1.0);
-            v_color = a_color;
+            gl_Position = u_proj * u_model * vec4(a_position, 1.0);
         }
         """
 
         frag_code ="""
-        in vec3 v_color;
-        
         out vec4 fragColor;
 
         void main()
         {
-            fragColor = vec4(v_color, 1.0);
+            fragColor = vec4(1.0, 1.0, 0.0, 1.0);
         }
         """
-        
+        # create shader program
         self._ProgramRef = OpenGLUtils.initializeProgram(vert_code, frag_code)
 
-        # set custom line width
-        glLineWidth(4)
-        glPointSize(10)
+        # render settings
+        glClearColor(0.0, 0.0, 0.0, 1.0)
+        glEnable(GL_DEPTH_TEST)
         
+        # init and bind vertex array object
         vao = glGenVertexArrays(1)
         glBindVertexArray(vao)
         
+        # vertex data
         position_data = [
-            [0.8, 0.0, 0.0],    [0.4, 0.6, 0.0],
-            [-0.4, 0.6, 0.0],   [-0.8, 0.0, 0.0],
-            [-0.4, -0.6, 0.0],  [0.4, -0.6, 0.0]
+            [0.0, 0.2, 0.0],
+            [0.1, -0.2, 0.0], 
+            [-0.1, -0.2, 0.0]
         ]
         self._VertCount = len(position_data)
         posAttrib = Attribute("vec3", position_data)
         posAttrib.associateVariable(self._ProgramRef, "a_position")
+
+        # uniform data
+        model_matrix = Matrix.makeTranslation(0, 0, -1)
+        self._ModelMatrix = Uniform("mat4", model_matrix)
+        self._ModelMatrix.locateVariable(self._ProgramRef, "u_model")
         
-        color_data = [
-            [1.0, 0.0, 0.0],    [1.0, 0.5, 0.0],
-            [1.0, 1.0, 0.0],    [0.0, 1.0, 0.0],
-            [0.0, 0.0, 1.0],    [0.5, 0.0, 1.0]
-        ]
-        colorAttrib = Attribute("vec3", color_data)
-        colorAttrib.associateVariable(self._ProgramRef, "a_color")
+        projection_matrix = Matrix.makePerspective()
+        self._ProjectionMatrix = Uniform("mat4", projection_matrix)
+        self._ProjectionMatrix.locateVariable(self._ProgramRef, "u_proj")
+
+        self._MoveSpeed = 0.5
+        self._TurnSpeed = 90 * (pi/180)
         
     def update(self):
+        delta = self.deltaTime()
+        self._MoveAmount = self._MoveSpeed * delta
+        self._TurnAmount = self._TurnSpeed * delta
+        
+        # render
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
         glUseProgram(self._ProgramRef)
-        glDrawArrays(GL_TRIANGLE_FAN, 0, self._VertCount)
+        self._ProjectionMatrix.uploadData()
+        self._ModelMatrix.uploadData()
+        glDrawArrays(GL_TRIANGLES, 0, self._VertCount)        
+
         
     def keyboardEvents(self, window, key, scancode, action, mods):
         # super().keyboardEvents(window, key, scancode, action, mods)
