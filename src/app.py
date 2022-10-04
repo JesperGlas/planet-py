@@ -11,19 +11,25 @@ class App(Base):
         
         vert_code = """
         in vec3 a_position;
+        in vec3 a_color;
 
+        out vec3 v_color;
+        
         void main()
         {
             gl_Position = vec4(a_position, 1.0);
+            v_color = a_color;
         }
         """
 
         frag_code ="""
+        in vec3 v_color;
+        
         out vec4 fragColor;
 
         void main()
         {
-            fragColor = vec4(1.0, 1.0, 0.0, 1.0);
+            fragColor = vec4(v_color, 1.0);
         }
         """
         
@@ -31,6 +37,7 @@ class App(Base):
 
         # set custom line width
         glLineWidth(4)
+        glPointSize(10)
         
         vao = glGenVertexArrays(1)
         glBindVertexArray(vao)
@@ -41,13 +48,20 @@ class App(Base):
             [-0.4, -0.6, 0.0],  [0.4, -0.6, 0.0]
         ]
         self._VertCount = len(position_data)
-
         posAttrib = Attribute("vec3", position_data)
         posAttrib.associateVariable(self._ProgramRef, "a_position")
         
+        color_data = [
+            [1.0, 0.0, 0.0],    [1.0, 0.5, 0.0],
+            [1.0, 1.0, 0.0],    [0.0, 1.0, 0.0],
+            [0.0, 0.0, 1.0],    [0.5, 0.0, 1.0]
+        ]
+        colorAttrib = Attribute("vec3", color_data)
+        colorAttrib.associateVariable(self._ProgramRef, "a_color")
+        
     def update(self):
         glUseProgram(self._ProgramRef)
-        glDrawArrays(GL_LINE_LOOP, 0, self._VertCount)
+        glDrawArrays(GL_TRIANGLE_FAN, 0, self._VertCount)
         
     def keyboardEvents(self, window, key, scancode, action, mods):
         # super().keyboardEvents(window, key, scancode, action, mods)

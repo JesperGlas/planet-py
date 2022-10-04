@@ -1,7 +1,6 @@
 import sys
 import glfw
 from core.openGLUtils import OpenGLUtils
-from core.input import keyboardEvent
 
 class Base:
     
