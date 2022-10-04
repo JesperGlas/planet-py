@@ -1,3 +1,4 @@
+import glfw
 from OpenGL.GL import *
 from core.base import Base
 from core.openGLUtils import OpenGLUtils
@@ -47,5 +48,11 @@ class App(Base):
     def update(self):
         glUseProgram(self._ProgramRef)
         glDrawArrays(GL_LINE_LOOP, 0, self._VertCount)
+        
+    def keyboardEvents(self, window, key, scancode, action, mods):
+        # super().keyboardEvents(window, key, scancode, action, mods)
+        if action == glfw.PRESS:
+            if key == glfw.KEY_ESCAPE:
+                glfw.set_window_should_close(window, True)
         
 App().run()
