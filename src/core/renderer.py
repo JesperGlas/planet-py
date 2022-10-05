@@ -6,7 +6,7 @@ from core.uniform import Uniform
 
 class Renderer:
     
-    def __init__(self, clear_color=[0, 0, 0]):
+    def __init__(self, clear_color=[0, 0, 0, 1]):
         
         glEnable(GL_DEPTH_TEST)
         # required for anti aliasing
@@ -14,7 +14,8 @@ class Renderer:
         glClearColor(
             clear_color[0],
             clear_color[1],
-            clear_color[2])
+            clear_color[2],
+            clear_color[3])
     
     def render(self, scene: Scene, camera: Camera):
         

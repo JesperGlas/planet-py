@@ -31,6 +31,6 @@ class BoxGeo(Geometry):
             [c1]*6 + [c2]*6 + [c3]*6 + [c4]*6 + [c5]*6 + [c6]*6 
         ]
         
-        self.addAttribute("vec3", "a_position")
-        self.addAttribute("vec3", "a_color")
+        self.addAttribute("vec3", "a_position", position_data)
+        self.addAttribute("vec3", "a_color", color_data)
         self.countVertices()

@@ -1,11 +1,12 @@
+from typing import List
 from core.matrix import Matrix
 
 class Object3D(Matrix):
     
     def __init__(self):
         self._Transform = Matrix.makeIdentity()
-        self._Parent = None
-        self._Children = []
+        self._Parent: Object3D = None
+        self._Children: List[Object3D] = []
         
     def add(self, child):
         self._Children.append(child)
@@ -19,7 +20,7 @@ class Object3D(Matrix):
         if self._Parent == None:
             return self._Transform
         else:
-            return self._Parent.getWorldMatrix @ self._Transform
+            return self._Parent.getWorldMatrix() @ self._Transform
         
     def getDescendantList(self):
         descendants = []

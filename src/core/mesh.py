@@ -21,7 +21,7 @@ class Mesh(Object3D):
         glBindVertexArray(self._Vao)
         
         attribute_object: Attribute
-        for variable_name, attribute_object in geometry.attributes.items():
-            attribute_object.associateVariable(material.program_ref, variable_name)
+        for variable_name, attribute_object in geometry._Attributes.items():
+            attribute_object.associateVariable(material._ProgramReference, variable_name)
         # unbind vao
         glBindVertexArray(0)
