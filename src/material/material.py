@@ -10,7 +10,7 @@ class Material:
         self._ProgramReference = OpenGLUtils.initializeProgram(vertex_shader_code, fragments_shader_code)
         
         # store uniform objects indexed by name
-        self._Uniforms = {}
+        self._Uniforms: Dict[str, Uniform] = {}
 
         # adding typical uniforms
         # additionl uniforms added by extending classes
